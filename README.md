@@ -1,6 +1,6 @@
 # RPACT Cheatsheets
 
-[Download the rpact Cheatsheet (PDF)](https://rpact-com.github.io/cheatsheets/pdf/rpact-cheatsheet.pdf)
+[Download the rpact Cheatsheet (PDF)](https://cheatsheets.rpact.org/pdf/rpact-cheatsheet.pdf)
 
 The [Quarto source](cheatsheets/rpact/rpact-cheatsheet.qmd) contains runnable examples for design, planning, analysis and reporting.
 

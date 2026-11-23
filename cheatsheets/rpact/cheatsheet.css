@@ -7,3 +7,5 @@ h1, h2 { color: #124d50; }
 .sheet-panel h2 { margin-top: 0; border: 0; }
 .sheet-panel img { width: 100%; }
 @media (max-width: 1000px) { .sheet-grid { grid-template-columns: minmax(0,1fr); } }
+.rpact-logo { float: right; width: clamp(44px, 9vw, 72px); height: auto; margin: 0 0 .5rem 1rem; }
+.sheet-grid { clear: both; }

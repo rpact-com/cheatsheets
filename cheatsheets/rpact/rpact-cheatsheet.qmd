@@ -25,6 +25,14 @@ execute:
 ```
 
 
+```{=typst}
+#place(top + right, image("logo.png", width: 16mm, alt: "rpact logo"))
+```
+
+```{=html}
+<img class="rpact-logo" src="logo.png" alt="rpact logo" width="72" height="72">
+```
+
 # rpact Cheatsheet
 
 **Design → Plan → Analyze** · From trial rules and planning assumptions to observed data
@@ -158,12 +166,23 @@ Read the output in this order.
 ::::
 
 
-[Step-by-step tutorial](https://www.rpact.org/vignettes/getting-started/rpact_step-by-step_tutorial/) · [R reference](https://docs.rpact.org/) · rpact `r as.character(packageVersion("rpact"))`
+[Step-by-step
+tutorial](https://www.rpact.org/vignettes/getting-started/rpact_step-by-step_tutorial/)
+· [rpact reference](https://docs.rpact.org/) · [rpact
+`r as.character(packageVersion("rpact"))`](https://cran.r-project.org/package=rpact)
 
 ```{=typst}
 #pagebreak()
 ```
 
+
+```{=typst}
+#place(top + right, image("logo.png", width: 16mm, alt: "rpact logo"))
+```
+
+```{=html}
+<img class="rpact-logo" src="logo.png" alt="rpact logo" width="72" height="72">
+```
 
 # Extend the workflow
 
@@ -278,4 +297,7 @@ fixedDesign |> summary()
 ::::
 
 
-[Comparison examples](https://www.rpact.org/vignettes/planning/rpact_comparison_examples/) · [R reference](https://docs.rpact.org/)
+[Comparison
+examples](https://www.rpact.org/vignettes/planning/rpact_comparison_examples/) ·
+[rpact reference](https://docs.rpact.org/) · [rpact
+`r as.character(packageVersion("rpact"))`](https://cran.r-project.org/package=rpact)

@@ -44,7 +44,7 @@ jobs:
           awk '/^Page size:/ {ok = ($3 > 841 && $3 < 843 && $5 > 594 && $5 < 596)} END {exit !ok}' pdf-info.txt
           mkdir -p _site/pdf
           cp "$pdf" _site/pdf/
-          cp index.html _site/
+          cp index.html favicon.ico _site/
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
