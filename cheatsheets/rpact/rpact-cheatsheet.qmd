@@ -1,0 +1,281 @@
+---
+pagetitle: rpact Cheatsheet
+format:
+  typst:
+    papersize: a4
+    margin:
+      x: 11mm
+      y: 9mm
+  html:
+    embed-resources: true
+    css: cheatsheet.css
+execute:
+  message: false
+---
+
+```{=typst}
+#set page(flipped: true, numbering: none)
+#set text(font: ("Arial", "Liberation Sans"), size: 9.5pt, fill: rgb("#142a32"))
+#set par(leading: 0.57em, justify: false)
+#show heading.where(level: 1): set text(size: 27pt, fill: rgb("#124d50"))
+#show heading.where(level: 2): set text(size: 13pt, fill: rgb("#124d50"))
+#show raw.where(block: true): set text(size: 8pt)
+#let panel(body) = block(width: 100%, inset: 8pt, radius: 4pt,
+  fill: rgb("#eef6f5"), body)
+```
+
+
+# rpact Cheatsheet
+
+**Design → Plan → Analyze** · From trial rules and planning assumptions to observed data
+
+:::: {.sheet-grid}
+
+```{=typst}
+#grid(columns: (1fr, 1fr, 1fr), gutter: 4mm, panel([
+```
+
+::: {.sheet-panel}
+## Choose a design
+
+**Fixed** · One planned analysis. **Group sequential** · Multiple planned analyses with stage-specific boundaries.
+
+```{r}
+#| output: false
+library(rpact)
+
+fixedDesign <- getDesignFixed(
+    alpha = 0.025, beta = 0.20, sided = 1
+)
+design <- getDesignGroupSequential(
+    kMax = 3,
+    alpha = 0.025, beta = 0.20, sided = 1,
+    informationRates = c(0.50, 0.75, 1),
+    typeOfDesign = "OF"
+)
+```
+
+
+`alpha` is the overall significance level. `1 - beta` is target power. `"OF"` selects O’Brien–Fleming boundaries. Check settings and defaults with `design |> print()`.
+
+```{r}
+#| echo: false
+#| fig-width: 4
+#| fig-height: 1.5
+#| fig-alt: "The fixed design has one boundary at 100% information. The sequential design has three decreasing boundaries."
+par(mar = c(2.8, 3.1, 0.3, 0.7), mgp = c(1.7, 0.55, 0),
+    las = 1, col.axis = "#24434a", col.lab = "#24434a")
+plot(100 * design$informationRates, design$criticalValues,
+    type = "o", pch = 19, col = "#147b74", lwd = 2,
+    xlim = c(45, 110), ylim = c(1.65, 3.05), xaxt = "n",
+    xlab = "Information (%)", ylab = "Boundary (Z)")
+axis(1, at = c(50, 75, 100))
+points(100, fixedDesign$criticalValues, pch = 17, col = "#9a542e")
+legend("bottomleft", c("Sequential", "Fixed"), pch = c(19, 17),
+    col = c("#147b74", "#9a542e"), bty = "n", cex = 0.75)
+
+```
+
+:::
+
+```{=typst}
+]), panel([
+```
+
+::: {.sheet-panel}
+## Plan sample size or power
+
+**How many participants?** Use `getSampleSize…()`. **Power at a given size?** Use `getPower…()`. Pick the suffix by endpoint.
+
+| Endpoint | Function suffix |
+|----------|-----------------|
+| Continuous | `Means` |
+| Binary | `Rates` |
+| Time to event | `Survival` |
+| Count data | `Counts` |
+
+Use the same assumed response rates for both designs.
+
+```{r}
+#| output: false
+fixedPlan <- fixedDesign |>
+    getSampleSizeRates(
+        pi1 = 0.60, pi2 = 0.45
+    )
+seqPlan <- design |>
+    getSampleSizeRates(
+        pi1 = 0.60, pi2 = 0.45
+    )
+
+design |>
+    getPowerRates(
+        pi1 = 0.60, pi2 = 0.45,
+        maxNumberOfSubjects = 360
+    ) |>
+    summary()
+```
+
+
+`seqPlan$numberOfSubjects` gives **cumulative** sample sizes across both groups. Here they are approximately **`r paste(round(seqPlan$numberOfSubjects, 1), collapse = " / ")`** before rounding to feasible stage sizes.
+:::
+
+```{=typst}
+]), panel([
+```
+
+::: {.sheet-panel}
+## Analyze observed data
+
+Supply participant and responder counts **for each stage**. Reuse the design that defines the analyses.
+
+```{r}
+#| output: false
+data <- getDataset(
+    n1 = c(90, 45, 45),
+    n2 = c(90, 45, 45),
+    events1 = c(51, 26, 28),
+    events2 = c(45, 19, 18)
+)
+result <- design |>
+    getAnalysisResults(dataInput = data)
+result |> summary()
+```
+
+
+Read the output in this order.
+
+1. **Test action** · Continue, stop, or reject according to the design. Here the first two analyses continue and the final analysis rejects.
+2. **Effect** · The final cumulative response-rate difference is approximately **12.8 percentage points**.
+3. **Uncertainty** · The final adjusted confidence interval is approximately **1.3 to 22.7 percentage points**.
+
+**Work with objects** · Use `print()` for values, `summary()` for key results, `plot()` for graphics, and `as.data.frame()` for tabular data where supported.
+:::
+
+```{=typst}
+]))
+```
+
+::::
+
+
+[Step-by-step tutorial](https://www.rpact.org/vignettes/getting-started/rpact_step-by-step_tutorial/) · [R reference](https://docs.rpact.org/) · rpact `r as.character(packageVersion("rpact"))`
+
+```{=typst}
+#pagebreak()
+```
+
+
+# Extend the workflow
+
+**Refine rules → Compare scenarios → Report results**
+
+:::: {.sheet-grid}
+
+```{=typst}
+#grid(columns: (1fr, 1fr, 1fr), gutter: 4mm, panel([
+```
+
+::: {.sheet-panel}
+## Refine interim rules
+
+**Alpha spending** ties cumulative Type I error spending to the information available at each analysis. **Futility** defines when low interim evidence can trigger early stopping.
+
+```{r}
+#| output: false
+spendingDesign <- getDesignGroupSequential(
+    kMax = 2, alpha = 0.025,
+    beta = 0.20, sided = 1,
+    informationRates = c(0.50, 1),
+    typeOfDesign = "asOF",
+    futilityBounds = 0,
+    bindingFutility = FALSE
+)
+spendingDesign |> summary()
+```
+
+
+`"asOF"` selects O’Brien–Fleming-type alpha spending. The futility boundary is on the Z scale at the interim look.
+
+**Simulate operating characteristics** for a proposed rule. Use enough replicates for the precision you need.
+
+```{r}
+#| output: false
+spendingDesign |>
+    getSimulationRates(
+        pi1 = 0.60, pi2 = 0.45,
+        plannedSubjects = c(180, 360),
+        maxNumberOfIterations = 1000,
+        seed = 123
+    ) |>
+    summary()
+```
+
+:::
+
+```{=typst}
+]), panel([
+```
+
+::: {.sheet-panel}
+## Compare planning scenarios
+
+Use the same endpoint, effect assumption, alpha and target power to compare designs. Start with a planning object and pipe it into `compare()`.
+
+```{r}
+#| output: false
+fixedPlan |>
+    compare(seqPlan) |>
+    summary()
+```
+
+
+| Total participants | Fixed | Sequential |
+|--------------------|------:|-----------:|
+| Maximum | `r sprintf("%.1f", max(fixedPlan$numberOfSubjects))` | `r sprintf("%.1f", max(seqPlan$numberOfSubjects))` |
+| Expected at 60% vs 45% | `r sprintf("%.1f", max(fixedPlan$numberOfSubjects))` | `r sprintf("%.1f", seqPlan$expectedNumberOfSubjectsH1)` |
+
+Planning values before rounding. Early stopping can lower the expected sample size even when the maximum is higher.
+
+Use a named collection to build up scenarios.
+
+```{r}
+#| output: false
+comparison <- getComparison(
+    fixed = fixedPlan
+)
+comparison |> add(sequential = seqPlan)
+comparison |> fetch("sequential")
+comparison |> as.data.frame()
+```
+
+
+Use `plot()` on the comparison to explore selected results visually.
+:::
+
+```{=typst}
+]), panel([
+```
+
+::: {.sheet-panel}
+## Report in Quarto or R Markdown
+
+With **knitr**, rpact’s `knit_print()` methods automatically format supported objects as Markdown, much like `knitr::kable()` does for tables.
+
+Put an rpact object or its summary on the last line of an executable R chunk. This example shows the code and its rendered output.
+
+```{r}
+fixedDesign |> summary()
+```
+
+
+**Reuse the result** · Pipe an object into `plot()` for a figure or into `as.data.frame()` for further processing, where supported.
+:::
+
+```{=typst}
+]))
+```
+
+::::
+
+
+[Comparison examples](https://www.rpact.org/vignettes/planning/rpact_comparison_examples/) · [R reference](https://docs.rpact.org/)

@@ -1,0 +1,66 @@
+name: Publish cheatsheets
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cheatsheets-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.5.3'
+          use-public-rspm: true
+      - name: Install R dependencies
+        shell: Rscript {0}
+        run: |
+          install.packages("pak")
+          pak::pkg_install(c("rmarkdown", "rpact@5.0.0"), ask = FALSE)
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: '1.8.26'
+      - name: Install PDF inspection tools and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils fonts-liberation
+      - name: Render and verify PDF
+        run: |
+          quarto render cheatsheets/rpact/rpact-cheatsheet.qmd --to typst
+          pdf=cheatsheets/rpact/rpact-cheatsheet.pdf
+          pdfinfo "$pdf" | tee pdf-info.txt
+          awk '/^Pages:/ {ok = ($2 == 2)} END {exit !ok}' pdf-info.txt
+          awk '/^Page size:/ {ok = ($3 > 841 && $3 < 843 && $5 > 594 && $5 < 596)} END {exit !ok}' pdf-info.txt
+          mkdir -p _site/pdf
+          cp "$pdf" _site/pdf/
+          cp index.html _site/
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

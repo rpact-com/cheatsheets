@@ -1,0 +1,6 @@
+.project
+_site/
+.quarto/
+*_files/
+cheatsheets/**/*.pdf
+cheatsheets/**/*.html
