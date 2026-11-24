@@ -69,7 +69,7 @@ design <- getDesignGroupSequential(
 ```{r}
 #| echo: false
 #| fig-width: 4
-#| fig-height: 1.5
+#| fig-height: 2.0
 #| fig-alt: "The fixed design has one boundary at 100% information. The sequential design has three decreasing boundaries."
 par(mar = c(2.8, 3.1, 0.3, 0.7), mgp = c(1.7, 0.55, 0),
     las = 1, col.axis = "#24434a", col.lab = "#24434a")
@@ -107,13 +107,9 @@ Use the same assumed response rates for both designs.
 ```{r}
 #| output: false
 fixedPlan <- fixedDesign |>
-    getSampleSizeRates(
-        pi1 = 0.60, pi2 = 0.45
-    )
+    getSampleSizeRates(pi1 = 0.60, pi2 = 0.45)
 seqPlan <- design |>
-    getSampleSizeRates(
-        pi1 = 0.60, pi2 = 0.45
-    )
+    getSampleSizeRates(pi1 = 0.60, pi2 = 0.45)
 
 design |>
     getPowerRates(
@@ -247,6 +243,12 @@ fixedPlan |>
     summary()
 ```
 
+For a quick side-by-side summary, use the versus operator `%vs%`:
+
+```{r}
+#| output: false
+fixedPlan %vs% seqPlan
+```
 
 | Total participants | Fixed | Sequential |
 |--------------------|------:|-----------:|
@@ -259,9 +261,7 @@ Use a named collection to build up scenarios.
 
 ```{r}
 #| output: false
-comparison <- getComparison(
-    fixed = fixedPlan
-)
+comparison <- getComparison(fixed = fixedPlan)
 comparison |> add(sequential = seqPlan)
 comparison |> fetch("sequential")
 comparison |> as.data.frame()
@@ -287,7 +287,14 @@ fixedDesign |> summary()
 ```
 
 
-**Reuse the result** · Pipe an object into `plot()` for a figure or into `as.data.frame()` for further processing, where supported.
+**Find a plot type.** Use [`plotTypes(output = "numcap")`](https://docs.rpact.org/reference/getAvailablePlotTypes.html) to list the available plot numbers and captions for an rpact object. Pass the number you want to `plot(type = ...)`.
+
+```{r}
+#| output: false
+seqPlan |> plotTypes(output = "numcap")
+```
+
+Use `as.data.frame()` to continue working with the result as tabular data, where supported.
 :::
 
 ```{=typst}
