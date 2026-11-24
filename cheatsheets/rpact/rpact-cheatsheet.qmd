@@ -247,6 +247,12 @@ fixedPlan |>
     summary()
 ```
 
+For a quick side-by-side summary, use the versus operator `%vs%`:
+
+```{r}
+#| output: false
+fixedPlan %vs% seqPlan
+```
 
 | Total participants | Fixed | Sequential |
 |--------------------|------:|-----------:|
