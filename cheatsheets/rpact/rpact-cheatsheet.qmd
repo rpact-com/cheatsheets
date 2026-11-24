@@ -259,9 +259,7 @@ Use a named collection to build up scenarios.
 
 ```{r}
 #| output: false
-comparison <- getComparison(
-    fixed = fixedPlan
-)
+comparison <- getComparison(fixed = fixedPlan)
 comparison |> add(sequential = seqPlan)
 comparison |> fetch("sequential")
 comparison |> as.data.frame()
