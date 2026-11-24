@@ -1,8 +1,8 @@
-# RPACT Cheat Sheets
+# RPACT Cheatsheets
 
-[Download the rpact Cheat Sheet (PDF)](https://cheatsheets.rpact.org/pdf/rpact-cheatsheet.pdf)
+[Download the rpact Cheatsheet (PDF)](https://cheatsheets.rpact.org/pdf/rpact-cheatsheet.pdf)
 
-## Help improve the rpact Cheat Sheet
+## Help improve the rpact Cheatsheet
 
 Which rpact command do you use regularly but still find yourself looking up? Maybe it's a function name, an argument you keep forgetting, or a short sequence of calls you use to get a result. If you look it up, chances are someone else does too.
 
@@ -22,3 +22,7 @@ quarto render cheatsheets/rpact/rpact-cheatsheet.qmd --to typst
 ```
 
 GitHub Actions builds the PDF for pull requests. Updates to `main` publish the latest version to the download URL above.
+
+## License
+
+The cheat sheets and their source documents are licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Please credit RPACT GmbH when reusing them. See [LICENSE](LICENSE) for the license notice.
