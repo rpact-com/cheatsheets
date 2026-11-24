@@ -161,11 +161,13 @@ Read the output in this order.
 
 ::::
 
-
-[Step-by-step
+CC BY SA RPACT GmbH · [rpact.com](https://www.rpact.com/) · [Step-by-step
 tutorial](https://www.rpact.org/vignettes/getting-started/rpact_step-by-step_tutorial/)
 · [rpact reference](https://docs.rpact.org/) · [rpact
 `r as.character(packageVersion("rpact"))`](https://cran.r-project.org/package=rpact)
+· Learn more at [rpact.org](https://www.rpact.org/) · Updated:
+`r format(Sys.Date(), "%Y-%m")` 
+
 
 ```{=typst}
 #pagebreak()
@@ -303,8 +305,10 @@ Use `as.data.frame()` to continue working with the result as tabular data, where
 
 ::::
 
-
+CC BY SA RPACT GmbH · [rpact.com](https://www.rpact.com/) · 
 [Comparison
 examples](https://www.rpact.org/vignettes/planning/rpact_comparison_examples/) ·
 [rpact reference](https://docs.rpact.org/) · [rpact
 `r as.character(packageVersion("rpact"))`](https://cran.r-project.org/package=rpact)
+· Learn more at [rpact.org](https://www.rpact.org/) 
+· Updated: `r format(Sys.Date(), "%Y-%m")` 
